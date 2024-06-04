@@ -8,15 +8,23 @@
     <title>Calculo Precio Diseños</title>
 
     <style>
-        #contenedor {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-        #centro {
+        #contenedor {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100vh;
+            padding: 0 5%;
+            background-color: #f0f0f0;
+        }
+
+        .panel {
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -24,7 +32,16 @@
             width: 30%;
             height: 60%;
             border-radius: 10%;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #derecha {
             background-color: rgb(109, 142, 142);
+        }
+
+        #izquierda {
+            background-color: rgb(11, 128, 54);
         }
 
         .medidas {
@@ -37,6 +54,9 @@
             background-color: transparent;
             border-radius: 10px;
             color: white;
+            border: 1px solid white;
+            padding: 0 10px;
+            margin-bottom: 10px;
         }
 
         input::placeholder {
@@ -45,37 +65,22 @@
             color: white;
         }
 
-        @media (width >=300px) and (width <=900px) {
-            body {
-                background-color: rgba(109, 142, 142, .8);
-            }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
 
+        @media (max-width: 900px) {
             #contenedor {
-                height: 95vh;
+                flex-direction: column;
+                justify-content: center;
+                height: auto;
+                padding: 20px;
             }
 
-            #centro {
+            .panel {
                 width: 80%;
-                height: 70%;
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 0, 0, 0.3), 0 0 60px rgba(0, 0, 0, 0.2);
-                animation: iluminacion 4s infinite alternate;
-            }
-
-            @keyframes iluminacion {
-                0% {
-                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-                    opacity: 1;
-                }
-
-                50% {
-                    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
-                    opacity: 0.7;
-                }
-
-                100% {
-                    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-                    opacity: 1;
-                }
+                height: auto;
+                margin: 10px 0;
             }
         }
     </style>
@@ -83,7 +88,7 @@
 
 <body>
     <div id="contenedor">
-        <div id="centro">
+        <div id="izquierda" class="panel">
             <label class="medidas">Ancho</label>
             <input id="ancho" type="number" placeholder="cm"><br>
             <label class="medidas">Alto</label>
@@ -98,29 +103,54 @@
             </div>
             <label id="precio" class="medidas">Precio: $</label>
         </div>
+        <div id="derecha" class="panel">            
+            <div id="contenedorTalla" class="medidas">
+                <input type="checkbox" id="PChica">
+                <label>CHICA</label><br>
+                <input type="checkbox" id="PMediana">
+                <label>MEDIANA</label><br>
+                <input type="checkbox" id="PGrande">
+                <label>GRANDE</label><br>
+            </div>
+            <label id="centradoA" class="medidas">ANCHO</label>
+            <label id="centradoH" class="medidas">ALTURA</label>
+        </div>        
     </div>
     <script>
-
+        //DIV VERDE
         var anchoDiseño = document.getElementById('ancho');
         var altoDiseño = document.getElementById('alto');
         var checkPlayera = document.getElementById('playera');
         var checkSudadera = document.getElementById('sudadera');
         var checkMangaLarga = document.getElementById('mangalarga');
+        
+        //DIV PLANKTON
+        var checkPCHICA = document.getElementById('PChica');
+        var checkPMEDIANA = document.getElementById('PMediana');
+        var checkPGRANDE = document.getElementById('PGrande');
+        // let centrado = document.getElementById('centrado');
+        checkPCHICA.addEventListener('input', centrarDiseño);
+        checkPMEDIANA.addEventListener('input', centrarDiseño);
+        checkPGRANDE.addEventListener('input', centrarDiseño);
+
 
         anchoDiseño.addEventListener('input', calcularPrecio);
         altoDiseño.addEventListener('input', calcularPrecio);
+        anchoDiseño.addEventListener('input', centrarDiseño);
+        altoDiseño.addEventListener('input', centrarDiseño);
         checkPlayera.addEventListener('input', calcularPrecio);
         checkSudadera.addEventListener('input', calcularPrecio);
         checkMangaLarga.addEventListener('input', calcularPrecio);
+        
 
 
-
+        
         function calcularPrecio() {
             var ancho = parseFloat(anchoDiseño.value);
             var alto = parseFloat(altoDiseño.value);
-
+            
             let areaDiseño = ancho * alto;
-
+            
             const anchoMaterial = 58;
             const altoMaterial = 100;
             const precioMaterial = 380;
@@ -128,9 +158,6 @@
             const precioSudadera = 260;
             const precioMangaLarga = 180;
             let areaMaterial = anchoMaterial * altoMaterial;
-            //document.getElementById('precio').innerText = 'Area Material: $' + areaMaterial;
-
-
 
             let subtotal = (areaDiseño * precioMaterial) / areaMaterial;
             let totalGanancia = subtotal + (subtotal * 0.8);
@@ -155,10 +182,24 @@
                 checkPlayera.disabled = false;
                 checkMangaLarga.disabled = false;
             }
-
+                        
             document.getElementById('precio').innerText = 'Precio: $' + Math.round(totalGanancia);
         }
-    </script>
+        function centrarDiseño(){
+            let centradoA = 0;
+            let centradoH = 0;
+            var ancho = parseFloat(anchoDiseño.value);
+            var alto = parseFloat(altoDiseño.value);
+            if(checkPMEDIANA.checked){
+                centradoA = (48 - ancho)/2;
+                centradoH = (59 - alto)/2;
+                checkPCHICA.disabled = true;
+                checkPGRANDE.disabled = true;
+            }
+            document.getElementById('centradoA').innerText = centradoA+' cm ancho';
+            document.getElementById('centradoH').innerText = centradoH+' cm alto';
+        }
+        </script>
 </body>
 
 </html>
